@@ -1,0 +1,102 @@
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+  box-shadow: 0 10px 30px rgba(0, 210, 255, 0.15);
+}
+
+.imageContainer {
+  height: 160px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #1a1e2f;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+  /* Placeholder fallback gradient if image missing */
+  background-color: #2a2e3f;
+  background-image: linear-gradient(45deg, #1a1e2f 25%, transparent 25%, transparent 75%, #1a1e2f 75%, #1a1e2f), 
+                    linear-gradient(45deg, #1a1e2f 25%, transparent 25%, transparent 75%, #1a1e2f 75%, #1a1e2f);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(10, 10, 15, 0.1) 0%, rgba(10, 10, 15, 0.9) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+}
+
+.zone {
+  align-self: flex-end;
+  background: rgba(0, 210, 255, 0.15);
+  color: var(--cursed-blue);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 1px;
+  backdrop-filter: blur(4px);
+}
+
+.content {
+  padding: 1rem;
+  border-top: 1px solid rgba(0, 210, 255, 0.2);
+}
+
+.name {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.missionCount {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--cursed-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cursed-blue);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; box-shadow: 0 0 4px var(--cursed-blue); }
+  50% { opacity: 1; box-shadow: 0 0 12px var(--cursed-blue); }
+  100% { opacity: 0.5; box-shadow: 0 0 4px var(--cursed-blue); }
+}
