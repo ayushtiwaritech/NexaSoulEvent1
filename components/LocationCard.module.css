@@ -3,15 +3,12 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-glow);
-  box-shadow: 0 10px 30px rgba(0, 210, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .imageContainer {
@@ -20,6 +17,12 @@
   position: relative;
   overflow: hidden;
   background-color: #1a1e2f;
+  cursor: pointer;
+}
+
+.imageContainer:focus {
+  outline: 2px solid var(--cursed-blue);
+  outline-offset: -2px;
 }
 
 .image {
@@ -27,7 +30,7 @@
   height: 100%;
   background-size: cover;
   background-position: center;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease, filter 0.5s ease;
   /* Placeholder fallback gradient if image missing */
   background-color: #2a2e3f;
   background-image: linear-gradient(45deg, #1a1e2f 25%, transparent 25%, transparent 75%, #1a1e2f 75%, #1a1e2f), 
@@ -36,8 +39,9 @@
   background-position: 0 0, 10px 10px;
 }
 
-.card:hover .image {
+.imageContainer:hover .image {
   transform: scale(1.05);
+  filter: brightness(0.8);
 }
 
 .overlay {
@@ -49,8 +53,9 @@
   background: linear-gradient(to bottom, rgba(10, 10, 15, 0.1) 0%, rgba(10, 10, 15, 0.9) 100%);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 1rem;
+  pointer-events: none;
 }
 
 .zone {
@@ -65,6 +70,46 @@
   font-weight: 600;
   letter-spacing: 1px;
   backdrop-filter: blur(4px);
+}
+
+.interactiveIndicator {
+  align-self: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imageContainer:hover .interactiveIndicator {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scanline {
+  width: 100%;
+  height: 2px;
+  background: var(--cursed-blue);
+  box-shadow: 0 0 10px var(--cursed-blue);
+  animation: scan 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes scan {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.indicatorText {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 5px var(--cursed-blue);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
 }
 
 .content {

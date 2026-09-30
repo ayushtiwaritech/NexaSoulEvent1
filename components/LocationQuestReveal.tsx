@@ -14,11 +14,18 @@ interface LocationQuestRevealProps {
 
 export default function LocationQuestReveal({ location, quests, onClose, onAccept }: LocationQuestRevealProps) {
   const [animationStage, setAnimationStage] = useState<'initial' | 'pulse' | 'reveal'>('initial');
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(quests.length > 0 ? quests[0].id : null);
   
   useEffect(() => {
-    // Sequence the animations
-    const pulseTimer = setTimeout(() => setAnimationStage('pulse'), 500);
-    const revealTimer = setTimeout(() => setAnimationStage('reveal'), 1800);
+    // Sequence the animations (500-900ms total)
+    const pulseTimer = setTimeout(() => setAnimationStage('pulse'), 50);
+    const revealTimer = setTimeout(() => setAnimationStage('reveal'), 600);
+    
+    // Check for reduced motion
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mediaQuery.matches) {
+      setAnimationStage('reveal'); // Skip to end
+    }
     
     return () => {
       clearTimeout(pulseTimer);
@@ -45,7 +52,7 @@ export default function LocationQuestReveal({ location, quests, onClose, onAccep
 
         {/* Content Reveal */}
         <div className={styles.content}>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">×</button>
           
           <div className={styles.locationHeader}>
             <span className={styles.zoneLabel}>{location.zone}</span>
@@ -60,14 +67,23 @@ export default function LocationQuestReveal({ location, quests, onClose, onAccep
                 <p className={styles.noQuests}>No active missions in this zone.</p>
               ) : (
                 quests.map(quest => (
-                  <div key={quest.id} className={styles.questItem}>
-                    <QuestCard quest={quest} />
-                    <button 
-                      className={styles.acceptBtn}
-                      onClick={() => onAccept(quest.id)}
-                    >
-                      ACCEPT MISSION
-                    </button>
+                  <div key={quest.id} className={`${styles.questWrapper} ${selectedQuestId === quest.id ? styles.selectedWrapper : ''}`}>
+                    <QuestCard 
+                      quest={quest} 
+                      isSelected={selectedQuestId === quest.id}
+                      onSelect={() => setSelectedQuestId(quest.id)}
+                    />
+                    {selectedQuestId === quest.id && (
+                      <div className={styles.actionContainer}>
+                        <button 
+                          className={styles.acceptBtn}
+                          onClick={() => onAccept(quest.id)}
+                          aria-label={`Accept mission ${quest.title}`}
+                        >
+                          ACCEPT MISSION
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))
               )}

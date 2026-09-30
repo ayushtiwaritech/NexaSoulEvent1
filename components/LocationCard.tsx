@@ -9,22 +9,25 @@ interface LocationCardProps {
 
 export default function LocationCard({ location, activeMissionCount = 0, onClick }: LocationCardProps) {
   return (
-    <div 
-      className={styles.card} 
-      onClick={() => onClick(location)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(location); }}
-    >
-      <div className={styles.imageContainer}>
-        {/* We use a div with background image for the placeholder effect. 
-            Once real images exist, this can be swapped with Next.js Image */}
+    <div className={styles.card}>
+      <div 
+        className={styles.imageContainer}
+        onClick={() => onClick(location)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(location); }}
+        aria-label={`View missions at ${location.name}`}
+      >
         <div 
           className={styles.image} 
           style={{ backgroundImage: `url(${location.image_url})` }}
         />
         <div className={styles.overlay}>
           <div className={styles.zone}>{location.zone}</div>
+          <div className={styles.interactiveIndicator}>
+            <span className={styles.scanline}></span>
+            <span className={styles.indicatorText}>VIEW MISSIONS</span>
+          </div>
         </div>
       </div>
       
