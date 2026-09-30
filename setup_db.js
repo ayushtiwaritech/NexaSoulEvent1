@@ -9,7 +9,7 @@ async function main() {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
-      "emailVerified" TIMESTAMP,
+      "emailVerified" BOOLEAN DEFAULT false,
       image TEXT,
       role TEXT DEFAULT 'MEMBER_1',
       "createdAt" TIMESTAMP NOT NULL,

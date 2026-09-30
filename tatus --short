@@ -1,0 +1,23 @@
+warning: in the working copy of 'src/App.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/App.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/AchievementsSection.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/ActiveMissions.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Header.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/LeaderboardSection.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/PlayerProfile.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/ProofSubmissionModal.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/data/mockData.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/index.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/types/operative.ts', LF will be replaced by CRLF the next time Git touches it
+ src/App.css                             | 1670 [32m+++++++++++++++++++++++++[m[31m------[m
+ src/App.tsx                             |  229 [32m+++[m[31m--[m
+ src/components/AchievementsSection.tsx  |   41 [32m+[m[31m-[m
+ src/components/ActiveMissions.tsx       |  133 [32m+[m[31m--[m
+ src/components/Header.tsx               |   52 [32m+[m[31m-[m
+ src/components/LeaderboardSection.tsx   |   72 [32m+[m[31m-[m
+ src/components/PlayerProfile.tsx        |  152 [32m++[m[31m-[m
+ src/components/ProofSubmissionModal.tsx |   32 [32m+[m[31m-[m
+ src/data/mockData.ts                    |   76 [32m+[m[31m-[m
+ src/index.css                           |   55 [32m+[m[31m-[m
+ src/types/operative.ts                  |    2 [32m+[m[31m-[m
+ 11 files changed, 1879 insertions(+), 635 deletions(-)

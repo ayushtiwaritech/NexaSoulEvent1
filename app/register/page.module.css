@@ -50,9 +50,10 @@
 .submitBtn {
   margin-top: 1rem;
   padding: 1rem;
-  background-color: var(--accent);
-  color: var(--background);
-  border: none;
+  background-color: rgba(0, 230, 184, 0.15);
+  color: #00ffcc;
+  border: 1px solid #00e6b8;
+  box-shadow: 0 0 12px rgba(0, 255, 204, 0.25);
   font-family: var(--font-geist-mono);
   font-size: 1.1rem;
   font-weight: bold;
@@ -62,6 +63,7 @@
 
 .submitBtn:hover:not(:disabled) {
   background-color: #00e6b8;
+  color: var(--background);
   transform: translateY(-2px);
   box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
 }

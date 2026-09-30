@@ -24,6 +24,7 @@ export default function Navbar() {
         <Link href="/">CU MISSION BOARD</Link>
       </div>
       <div className={styles.authLinks}>
+        <Link href="/operatives" className={styles.navLink}>MISSION OPERATIVES</Link>
         {isPending ? (
           <span className={styles.loading}>Loading...</span>
         ) : session ? (

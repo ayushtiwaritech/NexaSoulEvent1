@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Location, Quest } from '@/types';
 import LocationCard from '@/components/LocationCard';
 import QuestCard from '@/components/QuestCard';
@@ -13,6 +14,7 @@ import styles from './page.module.css';
 import { seedLocations, seedQuests } from '@/data/seed';
 
 export default function Home() {
+  const router = useRouter();
   const locations = seedLocations as Location[];
   const quests = seedQuests as Quest[];
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -45,6 +47,7 @@ export default function Home() {
       console.log(`[Member 1 -> DB] Mission Accepted: ${questId}`);
       alert(`MISSION ACCEPTED!\nQuest ID: ${questId}\n\n(Saved to Neon Database)`);
       setSelectedLocation(null); // Close modal
+      router.push('/operatives');
     }
   };
 
