@@ -23,6 +23,15 @@ export const AchievementsSection: React.FC<AchievementsSectionProps> = ({ achiev
     }
   };
 
+  const getRarityKanji = (rarity: BadgeRarity) => {
+    switch (rarity) {
+      case 'Classified': return '特級禁忌';
+      case 'Elite': return '一級術式';
+      case 'Tactical': return '二級技術';
+      case 'Common': return '基礎鍛錬';
+    }
+  };
+
   const renderIcon = (type: Achievement['iconType']) => {
     switch (type) {
       case 'shield':
@@ -91,17 +100,17 @@ export const AchievementsSection: React.FC<AchievementsSectionProps> = ({ achiev
       <div className="section-header-row">
         <div>
           <div className="section-title-with-badge">
-            <h2 className="section-title">Commendations & Badges</h2>
-            <span className="unlocked-counter-pill">
-              {unlockedCount} of {achievements.length} Unlocked
+            <h2 className="section-title">Innate Techniques & Commendations</h2>
+            <span className="unlocked-counter-pill cursed-counter-pill">
+              {unlockedCount} of {achievements.length} Techniques Mastered (術式開花)
             </span>
           </div>
           <p className="section-subtitle">
-            Earn prestigious tactical badges and bonus XP awards through operational excellence.
+            Awaken prestigious cursed technique badges and accumulate bonus XP reserves through operational mastery.
           </p>
         </div>
 
-        <div className="filter-pill-group">
+        <div className="filter-pill-group cursed-pill-group">
           {(['All', 'Unlocked', 'In Progress'] as const).map((tab) => (
             <button
               key={tab}
@@ -120,21 +129,23 @@ export const AchievementsSection: React.FC<AchievementsSectionProps> = ({ achiev
           return (
             <div 
               key={ach.id} 
-              className={`achievement-card ${ach.isUnlocked ? 'unlocked' : 'locked'}`}
+              className={`achievement-card cursed-ach-card ${ach.isUnlocked ? 'unlocked cursed-ach-unlocked' : 'locked'}`}
             >
               <div className="achievement-top">
-                <div className={`achievement-icon-wrapper ${ach.isUnlocked ? 'icon-glowing' : 'icon-dim'}`}>
+                <div className={`achievement-icon-wrapper ${ach.isUnlocked ? 'icon-glowing cursed-icon-glow' : 'icon-dim'}`}>
                   {renderIcon(ach.iconType)}
                   {ach.isUnlocked && (
-                    <div className="unlocked-check-chip">
+                    <div className="unlocked-check-chip cursed-check-chip">
                       ✓
                     </div>
                   )}
                 </div>
 
                 <div className="achievement-meta">
-                  <span className={getRarityBadgeClass(ach.rarity)}>{ach.rarity}</span>
-                  <span className="achievement-xp-bonus">+{ach.xpBonus} XP</span>
+                  <span className={getRarityBadgeClass(ach.rarity)}>
+                    {ach.rarity} <span className="rarity-kanji">({getRarityKanji(ach.rarity)})</span>
+                  </span>
+                  <span className="achievement-xp-bonus cursed-xp-bonus">+{ach.xpBonus} XP</span>
                 </div>
               </div>
 
@@ -143,18 +154,18 @@ export const AchievementsSection: React.FC<AchievementsSectionProps> = ({ achiev
 
               {ach.isUnlocked ? (
                 <div className="unlocked-footer">
-                  <span className="unlocked-date">Awarded {ach.unlockedAt}</span>
-                  <span className="status-secured">SECURED</span>
+                  <span className="unlocked-date">Awakened {ach.unlockedAt}</span>
+                  <span className="status-secured cursed-secured-tag">MASTERED // 開花</span>
                 </div>
               ) : (
                 <div className="progress-footer">
                   <div className="progress-labels">
-                    <span>Progress</span>
+                    <span>Incantation Sync</span>
                     <span>{ach.progress} / {ach.maxProgress} ({percent}%)</span>
                   </div>
-                  <div className="achievement-progress-track">
+                  <div className="achievement-progress-track cursed-ach-track">
                     <div 
-                      className="achievement-progress-fill"
+                      className="achievement-progress-fill cursed-ach-fill"
                       style={{ width: `${percent}%` }}
                     />
                   </div>

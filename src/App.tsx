@@ -1,26 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { initialOperativeProfile, initialMissions, mockAchievements, mockLeaderboard } from './data/mockData';
 import type { Mission } from './types/mission';
+import type { OperativeProfile, OperativeGrade } from './types/operative';
+import type { Achievement } from './types/achievement';
+import type { LeaderboardEntry } from './types/leaderboard';
 import { Header } from './components/Header';
 import { PlayerProfile } from './components/PlayerProfile';
 import { ActiveMissions } from './components/ActiveMissions';
 import { ProofSubmissionModal } from './components/ProofSubmissionModal';
 import { AchievementsSection } from './components/AchievementsSection';
 import { LeaderboardSection } from './components/LeaderboardSection';
+import { CursedBackground } from './components/CursedBackground';
+import { MissionCompletionOverlay, type CompletionData } from './components/MissionCompletionOverlay';
+import {
+  PAIR_B_STORAGE_KEY,
+  loadPersistedDemoState,
+  savePersistedDemoState,
+  clearPersistedDemoState,
+  getFreshInitialState,
+} from './utils/storage';
 import './App.css';
 
 export const App: React.FC = () => {
-  const [profile, setProfile] = useState(initialOperativeProfile);
-  const [missions, setMissions] = useState<Mission[]>(initialMissions);
-  const [achievements, setAchievements] = useState(mockAchievements);
-  const [leaderboard, setLeaderboard] = useState(mockLeaderboard);
-  const [activeTab, setActiveTab] = useState<'missions' | 'achievements' | 'leaderboard'>('missions');
+  // 1. Initial State loaded from localStorage (cu_mission_pair_b_demo_state) or fallback to mockData
+  const [profile, setProfile] = useState<OperativeProfile>(() => {
+    const saved = loadPersistedDemoState();
+    return saved ? saved.profile : initialOperativeProfile;
+  });
 
-  // Proof Modal State
+  const [missions, setMissions] = useState<Mission[]>(() => {
+    const saved = loadPersistedDemoState();
+    return saved ? saved.missions : initialMissions;
+  });
+
+  const [achievements, setAchievements] = useState<Achievement[]>(() => {
+    const saved = loadPersistedDemoState();
+    return saved ? saved.achievements : mockAchievements;
+  });
+
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => {
+    const saved = loadPersistedDemoState();
+    return saved ? saved.leaderboard : mockLeaderboard;
+  });
+
+  // Automatically persist any changes to profile, missions, achievements, or leaderboard
+  useEffect(() => {
+    savePersistedDemoState({
+      profile,
+      missions,
+      achievements,
+      leaderboard,
+    });
+  }, [profile, missions, achievements, leaderboard]);
+
+  // Non-persisted UI states
+  const [activeTab, setActiveTab] = useState<'missions' | 'achievements' | 'leaderboard'>('missions');
   const [selectedMissionForProof, setSelectedMissionForProof] = useState<Mission | null>(null);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
-
-  // Toast notification state
+  const [completionData, setCompletionData] = useState<CompletionData | null>(null);
+  const [isXpSurging, setIsXpSurging] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -28,6 +66,17 @@ export const App: React.FC = () => {
     setTimeout(() => {
       setToastMessage((curr) => (curr === msg ? null : curr));
     }, 4500);
+  };
+
+  // Development Reset Demo Progress control
+  const handleResetProgress = () => {
+    clearPersistedDemoState();
+    const fresh = getFreshInitialState();
+    setProfile(fresh.profile);
+    setMissions(fresh.missions);
+    setAchievements(fresh.achievements);
+    setLeaderboard(fresh.leaderboard);
+    showToast('Demo progress reset to original Grade 3 / 3,450 XP state.');
   };
 
   // Toggle objective checkbox
@@ -54,7 +103,7 @@ export const App: React.FC = () => {
     setMissions((prev) =>
       prev.map((m) => (m.id === missionId ? { ...m, status: 'In Progress' } : m))
     );
-    showToast('Directive initiated! Status transitioned to [In Progress].');
+    showToast('Cursed Technique Activated! Directive transitioned to [In Progress].');
   };
 
   // Open Proof Modal
@@ -84,15 +133,71 @@ export const App: React.FC = () => {
         };
       })
     );
-    showToast(`Cryptographic proof for mission submitted! Status: [Pending Review].`);
+    showToast(`Seal proof for directive submitted! Status: [Pending Verification Review].`);
   };
 
-  // Simulate Verifier Approval & XP Disbursement
+  // Simulate Verifier Approval & Trigger Cinematic Exorcism
   const handleSimulateApprove = (missionId: string) => {
     const mission = missions.find((m) => m.id === missionId);
     if (!mission) return;
 
     const earnedXp = mission.xpReward;
+    const prevGrade = profile.grade;
+    let nextGrade: OperativeGrade = profile.grade;
+    let isGradePromotion = false;
+    let nextTier = profile.gradeTier;
+    let newPrevXp = profile.prevGradeXp;
+    let newNextXp = profile.nextGradeXp;
+
+    const calculatedNewXp = profile.currentXp + earnedXp;
+
+    // Check Grade Promotion threshold:
+    // Grade 4 (0-1500) -> Grade 3 (1500-3500) -> Grade 2 (3500-6000) -> Grade 1 (6000-10000) -> Special Grade (10000+)
+    if (calculatedNewXp >= profile.nextGradeXp) {
+      isGradePromotion = true;
+      if (prevGrade === 'Grade 4') {
+        nextGrade = 'Grade 3';
+        nextTier = 3;
+        newPrevXp = 1500;
+        newNextXp = 3500;
+      } else if (prevGrade === 'Grade 3') {
+        nextGrade = 'Grade 2';
+        nextTier = 2;
+        newPrevXp = 3500;
+        newNextXp = 6000;
+      } else if (prevGrade === 'Grade 2') {
+        nextGrade = 'Grade 1';
+        nextTier = 1;
+        newPrevXp = 6000;
+        newNextXp = 10000;
+      } else if (prevGrade === 'Grade 1') {
+        nextGrade = 'Special Grade';
+        nextTier = 0;
+        newPrevXp = 10000;
+        newNextXp = 25000;
+      }
+    }
+
+    // Check if an achievement unlocks
+    let newlyUnlockedAchievementName: string | null = null;
+    const guardianAch = achievements.find((a) => a.codename === 'CAMPUS_GUARDIAN');
+    if (guardianAch && !guardianAch.isUnlocked && guardianAch.progress + 1 >= guardianAch.maxProgress) {
+      newlyUnlockedAchievementName = guardianAch.name;
+    }
+
+    // Trigger Cinematic Sequence
+    setCompletionData({
+      missionCode: mission.code,
+      missionTitle: mission.title,
+      xpEarned: earnedXp,
+      prevGrade: prevGrade,
+      newGrade: nextGrade,
+      isGradePromotion,
+      unlockedAchievement: newlyUnlockedAchievementName,
+    });
+
+    setIsXpSurging(true);
+    setTimeout(() => setIsXpSurging(false), 5000);
 
     // 1. Mark mission completed
     setMissions((prev) =>
@@ -113,40 +218,17 @@ export const App: React.FC = () => {
     );
 
     // 2. Grant XP and calculate new progression
-    setProfile((prev) => {
-      const newXp = prev.currentXp + earnedXp;
-      let newGrade = prev.grade;
-      let newTier = prev.gradeTier;
-      let newNextXp = prev.nextGradeXp;
-      let newPrevXp = prev.prevGradeXp;
-
-      // Check if leveled up
-      if (newXp >= prev.nextGradeXp) {
-        if (prev.grade === 'Specialist') {
-          newGrade = 'Vanguard';
-          newTier = 4;
-          newPrevXp = 5000;
-          newNextXp = 8500;
-        } else if (prev.grade === 'Vanguard') {
-          newGrade = 'Ghost Elite';
-          newTier = 5;
-          newPrevXp = 8500;
-          newNextXp = 15000;
-        }
-      }
-
-      return {
-        ...prev,
-        currentXp: newXp,
-        grade: newGrade,
-        gradeTier: newTier,
-        prevGradeXp: newPrevXp,
-        nextGradeXp: newNextXp,
-        missionsCompleted: prev.missionsCompleted + 1,
-        activeMissionsCount: Math.max(prev.activeMissionsCount - 1, 0),
-        campusRank: Math.max(prev.campusRank - 1, 1), // rank rises!
-      };
-    });
+    setProfile((prev) => ({
+      ...prev,
+      currentXp: calculatedNewXp,
+      grade: nextGrade,
+      gradeTier: nextTier,
+      prevGradeXp: newPrevXp,
+      nextGradeXp: newNextXp,
+      missionsCompleted: prev.missionsCompleted + 1,
+      activeMissionsCount: Math.max(prev.activeMissionsCount - 1, 0),
+      campusRank: Math.max(prev.campusRank - 1, 1),
+    }));
 
     // 3. Update leaderboard for current operative
     setLeaderboard((prev) =>
@@ -155,6 +237,7 @@ export const App: React.FC = () => {
           if (!entry.isCurrentUser) return entry;
           return {
             ...entry,
+            grade: nextGrade,
             totalXp: entry.totalXp + earnedXp,
             completedMissionsCount: entry.completedMissionsCount + 1,
             rankChange: 'up' as const,
@@ -183,7 +266,7 @@ export const App: React.FC = () => {
       })
     );
 
-    showToast(`✓ Mission Verified! +${earnedXp} XP awarded to ${profile.callsign}!`);
+    showToast(`✓ Mission Exorcised! +${earnedXp} XP (呪力) infused into ${profile.callsign}!`);
   };
 
   const activeMissionsCount = missions.filter(
@@ -191,30 +274,38 @@ export const App: React.FC = () => {
   ).length;
 
   return (
-    <div className="app-container">
-      {/* Background Ambience Elements */}
-      <div className="ambient-grid"></div>
-      <div className="ambient-glow glow-cyan"></div>
-      <div className="ambient-glow glow-indigo"></div>
+    <div className="app-container cursed-theme">
+      {/* Cursed Ambient Particle Atmosphere */}
+      <CursedBackground />
+
+      {/* Cinematic Mission Completion / Exorcism Overlay */}
+      <MissionCompletionOverlay 
+        data={completionData} 
+        onFinish={() => setCompletionData(null)} 
+      />
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="toast-notification">
-          <div className="toast-icon">⚡</div>
+        <div className="toast-notification cursed-toast">
+          <div className="toast-icon">☯</div>
           <div className="toast-text">{toastMessage}</div>
           <button className="toast-close" onClick={() => setToastMessage(null)}>✕</button>
         </div>
       )}
 
       {/* Header */}
-      <Header profile={profile} activeMissionsCount={activeMissionsCount} />
+      <Header 
+        profile={profile} 
+        activeMissionsCount={activeMissionsCount} 
+        onResetProgress={handleResetProgress}
+      />
 
       <main className="main-content">
         {/* Operative Profile & XP Progression */}
-        <PlayerProfile profile={profile} />
+        <PlayerProfile profile={profile} isSurging={isXpSurging} />
 
         {/* Tactical Navigation Bar */}
-        <nav className="dashboard-nav-bar">
+        <nav className="dashboard-nav-bar cursed-nav">
           <div className="nav-tabs-wrapper">
             <button
               className={`nav-tab-item ${activeTab === 'missions' ? 'active' : ''}`}
@@ -224,7 +315,7 @@ export const App: React.FC = () => {
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
               </svg>
-              Directives & Active Missions
+              Directives & Exorcisms
               <span className="nav-badge-pill">{missions.length}</span>
             </button>
 
@@ -236,7 +327,7 @@ export const App: React.FC = () => {
                 <circle cx="12" cy="8" r="7"/>
                 <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
               </svg>
-              Achievements & Badges
+              Innate Techniques & Badges
               <span className="nav-badge-pill">{achievements.filter(a => a.isUnlocked).length}/{achievements.length}</span>
             </button>
 
@@ -249,7 +340,7 @@ export const App: React.FC = () => {
                 <line x1="12" y1="20" x2="12" y2="4"/>
                 <line x1="6" y1="20" x2="6" y2="14"/>
               </svg>
-              Campus Leaderboard
+              Sorcerer Leaderboard
               <span className="nav-badge-pill rank-pill">Rank #{profile.campusRank}</span>
             </button>
           </div>
@@ -286,15 +377,23 @@ export const App: React.FC = () => {
         onSubmit={handleSubmitProof}
       />
 
-      {/* Footer */}
-      <footer className="site-footer">
+      {/* Footer with Persistence and Reset control */}
+      <footer className="site-footer cursed-footer">
         <div className="footer-left">
-          <span>CU Mission Operatives — Pair B Subsystem</span>
+          <span>CU Mission Operatives — Pair B Cursed Subsystem</span>
           <span className="text-divider">•</span>
-          <span>Zero Backend Bound (Mock Fixture Mode)</span>
+          <span className="storage-key-pill" title="Browser localStorage persistence key">
+            Key: {PAIR_B_STORAGE_KEY}
+          </span>
         </div>
         <div className="footer-right">
-          <span>Encrypted Local State</span>
+          <button 
+            className="btn-reset-demo" 
+            onClick={handleResetProgress}
+            title="Reset demo progress back to initial Grade 3 / 3,450 XP state"
+          >
+            <span className="reset-glyph">↺</span> Reset Demo Progress
+          </button>
           <span className="text-divider">•</span>
           <span className="ready-indicator">READY FOR PAIR A INTEGRATION</span>
         </div>

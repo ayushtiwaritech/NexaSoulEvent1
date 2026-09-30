@@ -48,21 +48,23 @@ export const ProofSubmissionModal: React.FC<ProofSubmissionModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-backdrop cursed-modal-backdrop" onClick={onClose}>
+      <div className="modal-card cursed-modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-header-tag">
-            <span className="modal-code">{mission.code}</span>
-            <span className="modal-xp">+{mission.xpReward} XP REWARD</span>
+            <span className="modal-code cursed-modal-code">{mission.code}</span>
+            <span className="modal-xp cursed-modal-xp">+{mission.xpReward} XP REWARD (呪力)</span>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
             ✕
           </button>
         </div>
 
-        <h3 className="modal-title">Submit Proof of Completion</h3>
+        <h3 className="modal-title">
+          <span className="title-seal-glyph">印</span> Submit Proof of Exorcism
+        </h3>
         <p className="modal-subtitle">
-          Mission: <strong>{mission.title}</strong>
+          Mission Directive: <strong>{mission.title}</strong>
         </p>
 
         <form onSubmit={handleSubmit} className="proof-form">
@@ -70,12 +72,12 @@ export const ProofSubmissionModal: React.FC<ProofSubmissionModalProps> = ({
 
           <div className="form-group">
             <label className="form-label" htmlFor="evidence-url">
-              Evidence Repository / Pull Request / Public URL <span className="req">*</span>
+              Evidence Repository / Pull Request / Verification URL <span className="req">*</span>
             </label>
             <input
               id="evidence-url"
               type="text"
-              className="form-input"
+              className="form-input cursed-input"
               placeholder="e.g. https://github.com/campus-guild/pr-42 or demo link"
               value={evidenceUrl}
               onChange={(e) => setEvidenceUrl(e.target.value)}
@@ -87,13 +89,13 @@ export const ProofSubmissionModal: React.FC<ProofSubmissionModalProps> = ({
 
           <div className="form-group">
             <label className="form-label" htmlFor="proof-notes">
-              Operative Briefing & Implementation Notes
+              Operative Briefing & Seal Implementation Notes
             </label>
             <textarea
               id="proof-notes"
               rows={3}
-              className="form-textarea"
-              placeholder="Detail the steps taken, edge cases addressed, and how criteria were verified..."
+              className="form-textarea cursed-textarea"
+              placeholder="Detail the technical steps taken, edge cases addressed, and how criteria were verified..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -103,7 +105,7 @@ export const ProofSubmissionModal: React.FC<ProofSubmissionModalProps> = ({
             <label className="form-label">
               Attach Telemetry / Log Artifact (Optional)
             </label>
-            <label className="upload-dropzone">
+            <label className="upload-dropzone cursed-dropzone">
               <input
                 type="file"
                 className="hidden-file-input"
@@ -128,10 +130,8 @@ export const ProofSubmissionModal: React.FC<ProofSubmissionModalProps> = ({
             <button type="button" className="btn-secondary" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+            <button type="submit" className="btn-primary cursed-btn-primary">
+              <span className="btn-glyph">封</span>
               Submit Proof for Verification
             </button>
           </div>

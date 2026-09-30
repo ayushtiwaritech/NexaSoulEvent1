@@ -1,4 +1,4 @@
-export type OperativeGrade = 'Cadet' | 'Field Operative' | 'Specialist' | 'Vanguard' | 'Ghost Elite';
+export type OperativeGrade = 'Grade 4' | 'Grade 3' | 'Grade 2' | 'Grade 1' | 'Special Grade';
 
 export interface OperativeProfile {
   id: string;
