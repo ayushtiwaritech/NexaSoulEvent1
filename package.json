@@ -10,7 +10,12 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/pg": "^8.23.1",
+    "bcryptjs": "^3.0.3",
+    "better-auth": "^1.7.6",
     "next": "15.0.0",
+    "pg": "^8.23.0",
     "react": "19.0.0-rc-65a56d0e-20241020",
     "react-dom": "19.0.0-rc-65a56d0e-20241020"
   },

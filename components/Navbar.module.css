@@ -1,0 +1,55 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--secondary);
+  border-bottom: 1px solid var(--accent);
+  color: var(--foreground);
+}
+
+.brand a {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 2px;
+}
+
+.authLinks {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navLink {
+  color: var(--foreground);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: var(--accent);
+}
+
+.userInfo {
+  font-family: var(--font-geist-mono);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.logoutBtn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: var(--accent);
+  color: var(--background);
+}

@@ -14,10 +14,9 @@ interface LocationQuestRevealProps {
 
 export default function LocationQuestReveal({ location, quests, onClose, onAccept }: LocationQuestRevealProps) {
   const [animationStage, setAnimationStage] = useState<'initial' | 'pulse' | 'reveal'>('initial');
-  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(quests.length > 0 ? quests[0].id : null);
   
   useEffect(() => {
-    // Sequence the animations (500-900ms total)
+    // Sequence the animations
     const pulseTimer = setTimeout(() => setAnimationStage('pulse'), 50);
     const revealTimer = setTimeout(() => setAnimationStage('reveal'), 600);
     
@@ -27,67 +26,116 @@ export default function LocationQuestReveal({ location, quests, onClose, onAccep
       setAnimationStage('reveal'); // Skip to end
     }
     
+    // ESC key to close
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    
     return () => {
       clearTimeout(pulseTimer);
       clearTimeout(revealTimer);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [onClose]);
+
+  // Using only the first active quest for the "What's happening here" section, 
+  // or a list if there are multiple. For now, let's show the primary one.
+  const primaryQuest = quests.length > 0 ? quests[0] : null;
 
   return (
     <div className={styles.overlay}>
       <div className={styles.backdrop} onClick={onClose} />
       
       <div className={`${styles.container} ${styles[animationStage]}`}>
-        {/* Location Image with zoom effect */}
-        <div className={styles.heroImage} style={{ backgroundImage: `url(${location.image_url})` }}>
-          <div className={styles.imageOverlay} />
-        </div>
+        <button className={styles.closeBtn} onClick={onClose} aria-label="Close modal">×</button>
         
-        {/* Seal Animation */}
-        <div className={styles.sealContainer}>
-          <div className={styles.sealOuter} />
-          <div className={styles.sealInner} />
-          <div className={styles.sealText}>DOMAIN EXPANSION</div>
+        <div className={styles.heroSection}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src={location.image_url} 
+            alt={location.name} 
+            className={styles.heroImage}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.add(styles.fallbackVisible);
+            }}
+          />
+          <div className={styles.imageFallback}></div>
+          <div className={styles.imageOverlay} />
+          
+          <div className={styles.sealContainer}>
+            <div className={styles.sealOuter} />
+            <div className={styles.sealInner} />
+            <div className={styles.sealText}>DOMAIN EXPANSION</div>
+          </div>
         </div>
 
-        {/* Content Reveal */}
         <div className={styles.content}>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">×</button>
-          
           <div className={styles.locationHeader}>
-            <span className={styles.zoneLabel}>{location.zone}</span>
             <h2 className={styles.locationName}>{location.name}</h2>
-            <p className={styles.locationDesc}>{location.description}</p>
+            <div className={styles.locationMeta}>
+              <span className={styles.zoneBadge}>{location.zone}</span>
+              <span className={styles.statusBadge}>
+                {quests.length > 0 ? (
+                  <><span className={styles.statusDotActive}></span> ACTIVE MISSION</>
+                ) : (
+                  <><span className={styles.statusDotInactive}></span> NO ACTIVE MISSION</>
+                )}
+              </span>
+            </div>
+            {location.description && (
+              <p className={styles.locationDesc}>{location.description}</p>
+            )}
           </div>
           
           <div className={styles.questSection}>
-            <h3 className={styles.questTitle}>AVAILABLE MISSIONS</h3>
-            <div className={styles.questList}>
-              {quests.length === 0 ? (
-                <p className={styles.noQuests}>No active missions in this zone.</p>
-              ) : (
-                quests.map(quest => (
-                  <div key={quest.id} className={`${styles.questWrapper} ${selectedQuestId === quest.id ? styles.selectedWrapper : ''}`}>
-                    <QuestCard 
-                      quest={quest} 
-                      isSelected={selectedQuestId === quest.id}
-                      onSelect={() => setSelectedQuestId(quest.id)}
-                    />
-                    {selectedQuestId === quest.id && (
-                      <div className={styles.actionContainer}>
-                        <button 
-                          className={styles.acceptBtn}
-                          onClick={() => onAccept(quest.id)}
-                          aria-label={`Accept mission ${quest.title}`}
-                        >
-                          ACCEPT MISSION
-                        </button>
-                      </div>
-                    )}
+            <h3 className={styles.sectionTitle}>WHAT&apos;S HAPPENING HERE?</h3>
+            
+            {quests.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>∅</div>
+                <p>No active mission is currently available at this location.</p>
+              </div>
+            ) : (
+              <div className={styles.questDetails}>
+                {primaryQuest && (
+                  <div className={styles.primaryQuest}>
+                    <h4 className={styles.questTitle}>{primaryQuest.title}</h4>
+                    <p className={styles.questDesc}>{primaryQuest.description}</p>
+                    
+                    <div className={styles.questMetaInfo}>
+                      <div className={styles.metaBadge}>{primaryQuest.category}</div>
+                      <div className={styles.metaBadge}>{primaryQuest.grade.replace('_', ' ')}</div>
+                      <div className={styles.metaBadgeReward}>⚡ {primaryQuest.xp_reward} XP</div>
+                    </div>
+                    
+                    <button 
+                      className={styles.acceptBtn}
+                      onClick={() => onAccept(primaryQuest.id)}
+                      aria-label={`Accept mission ${primaryQuest.title}`}
+                    >
+                      ACCEPT QUEST
+                    </button>
                   </div>
-                ))
-              )}
-            </div>
+                )}
+                
+                {quests.length > 1 && (
+                  <div className={styles.otherQuests}>
+                    <h5 className={styles.otherQuestsTitle}>OTHER MISSIONS ({quests.length - 1})</h5>
+                    <div className={styles.otherQuestsList}>
+                      {quests.slice(1).map(quest => (
+                        <QuestCard 
+                          key={quest.id}
+                          quest={quest}
+                          onSelect={() => onAccept(quest.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

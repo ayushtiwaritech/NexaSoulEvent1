@@ -5,6 +5,7 @@ import { Location, Quest } from '@/types';
 import LocationCard from '@/components/LocationCard';
 import QuestCard from '@/components/QuestCard';
 import LocationQuestReveal from '@/components/LocationQuestReveal';
+import { acceptQuestAction } from './actions';
 import styles from './page.module.css';
 
 // Mock data integration point since we don't have SSR enabled perfectly without setup
@@ -35,12 +36,16 @@ export default function Home() {
     setLocationQuests(quests.filter(q => q.location_id === loc.id));
   };
 
-  const handleAcceptMission = (questId: string) => {
-    // INTEGRATION CONTRACT: 
-    // This is the handoff point to Member 2's Active Mission module.
-    console.log(`[Member 1 -> Member 2] Mission Accepted: ${questId}`);
-    alert(`MISSION ACCEPTED!\nQuest ID: ${questId}\n\n(Handoff to Member 2 Active Mission System)`);
-    setSelectedLocation(null); // Close modal
+  const handleAcceptMission = async (questId: string) => {
+    // Call server action to securely accept
+    const result = await acceptQuestAction(questId);
+    if (result.error) {
+      alert(result.error);
+    } else {
+      console.log(`[Member 1 -> DB] Mission Accepted: ${questId}`);
+      alert(`MISSION ACCEPTED!\nQuest ID: ${questId}\n\n(Saved to Neon Database)`);
+      setSelectedLocation(null); // Close modal
+    }
   };
 
   return (
