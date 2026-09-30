@@ -1,0 +1,170 @@
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(0, 210, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card:hover {
+  border-color: rgba(0, 210, 255, 0.4);
+  box-shadow: 0 8px 30px rgba(0, 210, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+.card:focus {
+  outline: 2px solid var(--cursed-blue);
+  outline-offset: 2px;
+}
+
+.imageContainer {
+  height: 200px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #1a1e2f;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.6s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.imageFallback {
+  position: absolute;
+  inset: 0;
+  background-color: #2a2e3f;
+  background-image: linear-gradient(45deg, #1a1e2f 25%, transparent 25%, transparent 75%, #1a1e2f 75%, #1a1e2f), 
+                    linear-gradient(45deg, #1a1e2f 25%, transparent 25%, transparent 75%, #1a1e2f 75%, #1a1e2f);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  display: none;
+}
+
+.fallbackVisible {
+  display: block;
+}
+
+.gradientOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(10, 10, 15, 0.95) 100%);
+  pointer-events: none;
+}
+
+.overlayContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.zoneBadge {
+  background: rgba(0, 210, 255, 0.15);
+  color: var(--cursed-blue);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 1px;
+  backdrop-filter: blur(4px);
+}
+
+.content {
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.name {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0 0 1.5rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.statusSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1rem;
+}
+
+.missionCount {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.dotActive {
+  width: 8px;
+  height: 8px;
+  background-color: var(--cursed-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cursed-blue);
+  animation: pulse 2s infinite;
+}
+
+.dotInactive {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.actionPrompt {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cursed-blue);
+  letter-spacing: 1px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(-5px);
+}
+
+.card:hover .actionPrompt {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; box-shadow: 0 0 4px var(--cursed-blue); }
+  50% { opacity: 1; box-shadow: 0 0 12px var(--cursed-blue); }
+  100% { opacity: 0.5; box-shadow: 0 0 4px var(--cursed-blue); }
+}

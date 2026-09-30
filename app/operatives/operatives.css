@@ -1,0 +1,110 @@
+/*
+ * PAIR B — OPERATIVES PAGE SCOPED VARIABLES
+ * 
+ * These are the CSS custom properties from src/index.css, re-declared here
+ * so they are available to the operatives page without modifying Pair A's globals.
+ * Imported in app/operatives/layout.tsx (a Server Component / layout scope).
+ * 
+ * src/App.css uses only .class selectors (no body/html overrides), so it is
+ * safe to import directly in the page component.
+ */
+
+/* Google Fonts for Pair B */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* Pair B CSS variable definitions (mirrors src/index.css :root block) */
+:root {
+  /* Fonts */
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Background */
+  --bg-deep: #050508;
+  --bg-surface: #0a0812;
+  --bg-card: rgba(15, 12, 24, 0.78);
+  --bg-card-hover: rgba(24, 18, 40, 0.88);
+  --bg-input: #08060f;
+
+  /* Borders */
+  --border-subtle: rgba(168, 85, 247, 0.12);
+  --border-bright: rgba(168, 85, 247, 0.28);
+  --border-cyan: rgba(0, 240, 255, 0.35);
+  --border-violet: rgba(168, 85, 247, 0.5);
+
+  /* Text */
+  --text-primary: #f1f5f9;
+  --text-secondary: #a1a1aa;
+  --text-muted: #64748b;
+  --text-bright: #ffffff;
+
+  /* Accent colours */
+  --accent-violet: #a855f7;
+  --accent-violet-glow: rgba(168, 85, 247, 0.35);
+  --accent-purple: #7c3aed;
+  --accent-purple-glow: rgba(124, 58, 237, 0.35);
+  --accent-cyan: #00f0ff;
+  --accent-cyan-glow: rgba(0, 240, 255, 0.35);
+  --accent-crimson: #f43f5e;
+  --accent-crimson-glow: rgba(244, 63, 94, 0.3);
+  --accent-amber: #f59e0b;
+  --accent-emerald: #10b981;
+
+  /* Status */
+  --status-accepted: #00f0ff;
+  --status-in-progress: #a855f7;
+  --status-submitted: #f43f5e;
+  --status-completed: #10b981;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(168, 85, 247, 0.08);
+  --shadow-cursed-glow: 0 0 30px -5px rgba(168, 85, 247, 0.25);
+}
+
+/* Full-page wrapper for the /operatives route.
+   Isolates Pair B layout from Pair A's body/navbar styles. */
+.operatives-page-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #050508;
+  font-family: var(--font-main);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scoped element resets for the operatives dashboard */
+.operatives-page-wrapper,
+.operatives-page-wrapper *,
+.operatives-page-wrapper *::before,
+.operatives-page-wrapper *::after {
+  box-sizing: border-box;
+}
+
+.operatives-page-wrapper button,
+.operatives-page-wrapper input,
+.operatives-page-wrapper textarea,
+.operatives-page-wrapper select {
+  font-family: inherit;
+}
+
+.operatives-page-wrapper a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.operatives-page-wrapper img {
+  max-width: 100%;
+}
+

@@ -86,7 +86,7 @@ export const ActiveMissions: React.FC<ActiveMissionsProps> = ({
       {filteredMissions.length === 0 ? (
         <div className="empty-missions-state cursed-empty-state">
           <div className="empty-icon">☯</div>
-          <div className="empty-title">No Directives in "{filter}"</div>
+          <div className="empty-title">No Directives in &quot;{filter}&quot;</div>
           <p className="empty-desc">Shift filter parameters or accept outstanding campus directives.</p>
         </div>
       ) : (
@@ -174,7 +174,7 @@ export const ActiveMissions: React.FC<ActiveMissionsProps> = ({
                       {mission.proofSubmission.evidenceUrl}
                     </a>
                     {mission.proofSubmission.notes && (
-                      <p className="proof-notes-preview">"{mission.proofSubmission.notes}"</p>
+                      <p className="proof-notes-preview">&quot;{mission.proofSubmission.notes}&quot;</p>
                     )}
                   </div>
                 )}

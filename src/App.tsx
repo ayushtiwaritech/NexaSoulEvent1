@@ -19,39 +19,72 @@ import {
   clearPersistedDemoState,
   getFreshInitialState,
 } from './utils/storage';
-import './App.css';
 
-export const App: React.FC = () => {
-  // 1. Initial State loaded from localStorage (cu_mission_pair_b_demo_state) or fallback to mockData
-  const [profile, setProfile] = useState<OperativeProfile>(() => {
-    const saved = loadPersistedDemoState();
-    return saved ? saved.profile : initialOperativeProfile;
-  });
+export interface AppProps {
+  serverMissions?: Mission[];
+}
+
+export const App: React.FC<AppProps> = ({ serverMissions = [] }) => {
+  // 1. Initial State: Always initialized to baseline (mockData + serverMissions)
+  // so that Server-rendered HTML and client's FIRST render produce 100% identical output.
+  const [profile, setProfile] = useState<OperativeProfile>(initialOperativeProfile);
 
   const [missions, setMissions] = useState<Mission[]>(() => {
-    const saved = loadPersistedDemoState();
-    return saved ? saved.missions : initialMissions;
+    if (!serverMissions || serverMissions.length === 0) {
+      return initialMissions;
+    }
+    const existingIds = new Set(initialMissions.map((m) => m.id));
+    const newFromNeon = serverMissions.filter((sm) => !existingIds.has(sm.id));
+    return [...newFromNeon, ...initialMissions];
   });
 
-  const [achievements, setAchievements] = useState<Achievement[]>(() => {
-    const saved = loadPersistedDemoState();
-    return saved ? saved.achievements : mockAchievements;
-  });
+  const [achievements, setAchievements] = useState<Achievement[]>(mockAchievements);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(mockLeaderboard);
+  const [isStorageLoaded, setIsStorageLoaded] = useState(false);
 
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => {
-    const saved = loadPersistedDemoState();
-    return saved ? saved.leaderboard : mockLeaderboard;
-  });
-
-  // Automatically persist any changes to profile, missions, achievements, or leaderboard
+  // 2. Restore localStorage state only after mounting on the client (hydration-safe)
   useEffect(() => {
+    const saved = loadPersistedDemoState();
+    if (saved) {
+      setProfile(saved.profile);
+      setAchievements(saved.achievements);
+      setLeaderboard(saved.leaderboard);
+
+      setMissions(() => {
+        const baseMissions = saved.missions;
+        if (!serverMissions || serverMissions.length === 0) {
+          return baseMissions;
+        }
+        const existingIds = new Set(baseMissions.map((m) => m.id));
+        const newFromNeon = serverMissions.filter((sm) => !existingIds.has(sm.id));
+        return [...newFromNeon, ...baseMissions];
+      });
+    }
+    setIsStorageLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 3. Automatically integrate incoming Neon server missions into state
+  useEffect(() => {
+    if (!serverMissions || serverMissions.length === 0) return;
+    setMissions((currentMissions) => {
+      const existingIds = new Set(currentMissions.map((m) => m.id));
+      const newFromNeon = serverMissions.filter((sm) => !existingIds.has(sm.id));
+      if (newFromNeon.length === 0) return currentMissions;
+      return [...newFromNeon, ...currentMissions];
+    });
+  }, [serverMissions]);
+
+  // 4. Automatically persist to localStorage ONLY after client has mounted and loaded storage
+  useEffect(() => {
+    if (!isStorageLoaded) return;
     savePersistedDemoState({
       profile,
       missions,
       achievements,
       leaderboard,
     });
-  }, [profile, missions, achievements, leaderboard]);
+  }, [isStorageLoaded, profile, missions, achievements, leaderboard]);
 
   // Non-persisted UI states
   const [activeTab, setActiveTab] = useState<'missions' | 'achievements' | 'leaderboard'>('missions');
